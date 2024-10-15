@@ -1,8 +1,16 @@
-from flask import render_template
+from flask import redirect, render_template, url_for
+from flask_wtf import FlaskForm
+from wtforms import HiddenField, StringField
+from wtforms.validators import DataRequired
 
 from .app import app, db
-from .models import Author, Book, get_sample
+from .models import Author, Book, get_author, get_book, get_sample
 
+
+class AuthorForm(FlaskForm):
+    id = HiddenField('id')
+    name = StringField('Nom', validators=[DataRequired()])
+   
 
 @app.route("/")
 def home():
@@ -12,7 +20,40 @@ def home():
         books = get_sample()
     )
     
-@app.route("/detail/<id>")
-def detail(id):
-    book = db.session.get(Book, {"id": id})
-    return render_template("detail.html", book=book)
+@app.route("/books/<id>")
+def detail_book(id):
+    book = get_book(id)
+    return render_template("book.html", book=book)
+
+
+@app.route("/authors/<id>")
+def detail_author(id):
+    author = get_author(id)
+    return render_template("author.html", author=author)
+
+
+@app.route("/edit/author/<int:id>")
+def edit_author(id):
+    author = get_author(id)
+    form = AuthorForm(id=author.id, name=author.name)
+    return render_template(
+        "edit-author.html",
+        author=author,
+        form=form
+    )
+
+
+@app.route("/save/author", methods=["POST"])
+def save_author():
+    author = None
+    form = AuthorForm()
+    
+    if form.validate_on_submit():
+        id = int(form.id.data)
+        author = get_author(id)
+        author.name = form.name.data
+        db.session.commit()
+        return redirect(url_for('detail_author', id=author.id))
+    
+    author = get_author((int(form.id.data)))
+    return render_template("edit-author.html", author=author, form=form)

@@ -7,8 +7,10 @@
 
 {% block content %}
   <h1>{{ title }}</h1>
+  
   <div class="sample">
-    {% for x in books %}
+    <h1>{{ author.name }}</h1>
+    {% for x in author.books %}
       <a href="{{ url_for('detail_book', id=x.id) }}">
         <img src="{{ url_for('static', filename='images/' + x.img) }}" alt="{{ x.title }}" title="{{ x.title }}">
       </a>

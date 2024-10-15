@@ -30,5 +30,13 @@ class Book(db.Model):
         return f"Book{self.id, self.title}"
 
 
-def get_sample():
+def get_sample() -> list[Book]:
     return Book.query.limit(10).all()
+
+
+def get_author(id: int) -> Author:
+    return Author.query.get(id)
+
+
+def get_book(id: int) -> Book:
+    return Book.query.get(id)
