@@ -19,7 +19,8 @@ def home():
         title="My Books !",
         books = get_sample()
     )
-    
+
+
 @app.route("/books/<id>")
 def detail_book(id):
     book = get_book(id)
@@ -36,11 +37,28 @@ def detail_author(id):
 def edit_author(id):
     author = get_author(id)
     form = AuthorForm(id=author.id, name=author.name)
-    return render_template(
-        "edit-author.html",
-        author=author,
-        form=form
-    )
+    return render_template("edit-author.html", author=author, form=form)
+
+
+@app.route("/add/author")
+def add_author():
+    form = AuthorForm()
+    return render_template("add-author.html", form=form)
+
+
+@app.route("/add/author", methods=["POST"])
+def create_author():
+    author = None
+    form = AuthorForm()
+    
+    if form.validate_on_submit():
+        author = Author(name=form.name.data)
+        db.session.add(author)
+        db.session.commit()
+        return redirect(url_for('detail_author', id=author.id)) 
+    
+    author = get_author((int(form.id.data)))
+    return render_template("add-author.html", form=form)
 
 
 @app.route("/save/author", methods=["POST"])
