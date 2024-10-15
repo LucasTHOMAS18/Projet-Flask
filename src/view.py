@@ -1,7 +1,7 @@
 from flask import render_template
 
-from .app import app
-from .models import get_sample
+from .app import app, db
+from .models import Author, Book, get_sample
 
 
 @app.route("/")
@@ -14,6 +14,5 @@ def home():
     
 @app.route("/detail/<id>")
 def detail(id):
-    books = get_sample()
-    book = books[int(id)]
+    book = db.session.get(Book, {"id": id})
     return render_template("detail.html", book=book)

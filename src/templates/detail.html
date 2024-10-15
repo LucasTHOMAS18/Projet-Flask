@@ -11,7 +11,7 @@
   <div class="sample">
     <img src="{{ url_for('static', filename='images/' + book.img) }}" alt="{{ book.title }}" title="{{ book.title }}">
     <h1>{{ book.title }}</h1>
-    <p>{{ book.author }}</p>
-    <p><i>{{ book.price }}</i></p>
+    <p>{{ book.author.name }}</p>
+    <p><i>{{ book.price }}€</i></p>
   </div>
 {% endblock %}
