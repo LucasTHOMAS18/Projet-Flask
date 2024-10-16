@@ -1,10 +1,10 @@
-from flask import redirect, render_template, url_for
+from flask import redirect, render_template, url_for, request
 from flask_wtf import FlaskForm
 from wtforms import HiddenField, StringField
 from wtforms.validators import DataRequired
 
 from .app import app, db
-from .models import Author, Book, get_author, get_book, get_sample
+from .models import Author, Book, get_author, get_book, get_sample, book_by_author
 
 
 class AuthorForm(FlaskForm):
@@ -49,7 +49,7 @@ def add_author():
 @app.route("/add/author", methods=["POST"])
 def create_author():
     author = None
-    form = AuthorForm()
+    form = AuthorForm() 
     
     if form.validate_on_submit():
         author = Author(name=form.name.data)
@@ -75,3 +75,10 @@ def save_author():
     
     author = get_author((int(form.id.data)))
     return render_template("edit-author.html", author=author, form=form)
+
+@app.route("/search")
+def search_bar():
+    search_query = request.args.get('q', '')
+    books = book_by_author(search_query)
+    return render_template("search.html", title=f"Search results for '{search_query}'", books=books)
+

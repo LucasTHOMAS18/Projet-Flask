@@ -40,3 +40,10 @@ def get_author(id: int) -> Author:
 
 def get_book(id: int) -> Book:
     return Book.query.get(id)
+
+
+def book_by_author(search: str) -> list[Book]:
+    return Book.query.join(Author).filter(Author.name.ilike(f'{search}%')).all()
+
+
+
