@@ -35,13 +35,18 @@
 
           {% if current_user.is_authenticated %}
           <ul class="navbar-nav navbar-right mb-2 mb-md-0">
+            <li><a class="nav-link active" href="{{ url_for('view_favorites') }}">Favorites</a></li>
             <li><a class="nav-link active">{{ current_user.username }}</a></li>
           </ul>
           
-          <button class="btn btn-outline-success me-2"><a class="nav-link active" aria-current="page" href="{{url_for('logout')}}">Logout</a></button>
-          {% else %}
-          <button class="btn btn-outline-success me-2"><a class="nav-link active" aria-current="page" href="{{url_for('login')}}">Login</a></button>
-          {% endif %}
+          <button class="btn btn-outline-success me-2">
+            <a class="nav-link active" aria-current="page" href="{{ url_for('logout') }}">Logout</a>
+          </button>
+        {% else %}
+          <button class="btn btn-outline-success me-2">
+            <a class="nav-link active" aria-current="page" href="{{ url_for('login') }}">Login</a>
+          </button>
+        {% endif %}
 
           <form class="d-flex" role="search">
             <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
