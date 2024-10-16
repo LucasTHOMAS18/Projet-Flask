@@ -8,12 +8,12 @@
 {% block content %}
 <h1>
     {% if form.id.data != None %}
-    Edit author: {{ author.name }}
+    Edit author: {{ form.name.data }}
     {% else %}
     Add new author
     {% endif %}
 </h1>
-<form role="form" method="POST" action="{{ url_for('save_author', id=author.id) }}">
+<form role="form" method="POST" action="{{ url_for('save_author', id=form.id.data) }}">
     {{ form.hidden_tag() }}
 
     <div class="{% if form.name.errors %} form-group has-error {% else %} form-group {% endif %}">

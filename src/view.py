@@ -1,9 +1,10 @@
-from flask import redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import login_required, login_user, logout_user
 
 from .app import app, db
-from .forms import AuthorForm, LoginForm
-from .models import Author, get_author, get_book, get_sample, update_author
+from .forms import AuthorForm, BookForm, LoginForm
+from .models import (get_author, get_author_by_name, get_book, get_sample,
+                     update_author, update_book)
 
 
 @app.route("/")
@@ -31,12 +32,31 @@ def save_author(id: int | None = None):
     form = AuthorForm(id=author.id, name=author.name) if author else AuthorForm()
     
     author_id = int(form.id.data) if form.id.data else None
-    author = update_author(author_id, form.name.data)
     
     if form.validate_on_submit():
+        author = update_author(author_id, form.name.data)
         return redirect(url_for('detail_author', id=author.id))
     
-    return render_template("edit-author.html", author=author, form=form)
+    return render_template("edit-author.html", form=form)
+
+
+@app.route("/add/book", methods=["POST", "GET"])
+@app.route("/edit/book/<int:id>", methods=["POST", "GET"])
+@login_required
+def save_book(id: int | None = None):
+    book = get_book(id)
+    form = BookForm(id=book.id, name=book.title, author=book.author.name, url=book.url, prix=book.price) if book else BookForm()
+    
+    if form.validate_on_submit():
+        book_id = int(form.id.data) if form.id.data else None
+        author = get_author_by_name(form.author.data)
+        if not author:
+            return render_template("edit-book.html", book=book, form=form)
+
+        book = update_book(book_id, form.name.data, author.id, form.url.data, form.img.data, form.prix.data)
+        return redirect(url_for('detail_book', id=book.id))
+
+    return render_template("edit-book.html", book=book, form=form)
 
 
 @app.route("/login/", methods=["GET", "POST"])
