@@ -1,4 +1,10 @@
 {% extends "base.html" %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+{% endblock %}
+
 {% block content %}
 <h1>Add new author</h1>
 <form role="form" method="POST" action="{{ url_for('create_author') }}">

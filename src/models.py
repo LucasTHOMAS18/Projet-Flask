@@ -1,17 +1,18 @@
 import os.path
 
 import yaml
+from flask_login import UserMixin
 
-from .app import db
+from .app import db, login_manager
 from .utils import mkpath
 
 
 class Author(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    
+
     books = db.relationship("Book", back_populates="author")
-    
+
     def __repr__(self):
         return f"Author{self.id, self.name}"
 
@@ -22,12 +23,20 @@ class Book(db.Model):
     url = db.Column(db.String(100))
     img = db.Column(db.String(100))
     price = db.Column(db.Float)
-    
-    author_id =  db.Column(db.Integer, db.ForeignKey("author.id"))
+
+    author_id = db.Column(db.Integer, db.ForeignKey("author.id"))
     author = db.relationship("Author", back_populates="books")
-    
+
     def __repr__(self):
         return f"Book{self.id, self.title}"
+
+
+class User(db.Model, UserMixin):
+    username = db.Column(db.String(50), primary_key=True)
+    password = db.Column(db.String(100))
+    
+    def get_id(self):
+        return self.username
 
 
 def get_sample() -> list[Book]:
@@ -40,3 +49,8 @@ def get_author(id: int) -> Author:
 
 def get_book(id: int) -> Book:
     return Book.query.get(id)
+
+
+@login_manager.user_loader
+def load_user(username):
+    return User.query.get(username)
