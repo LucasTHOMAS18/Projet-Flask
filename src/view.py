@@ -30,14 +30,12 @@ def save_author(id: int | None = None):
     author = get_author(id)
     form = AuthorForm(id=author.id, name=author.name) if author else AuthorForm()
     
-    if form.validate_on_submit():
-        author_id = int(form.id.data) if form.id.data else None
-        author = update_author(author_id, form.name.data)
-        
-        return redirect(url_for('detail_author', id=author.id))
-    
     author_id = int(form.id.data) if form.id.data else None
     author = update_author(author_id, form.name.data)
+    
+    if form.validate_on_submit():
+        return redirect(url_for('detail_author', id=author.id))
+    
     return render_template("edit-author.html", author=author, form=form)
 
 
