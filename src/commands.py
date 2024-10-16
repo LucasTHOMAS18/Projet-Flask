@@ -53,3 +53,9 @@ def new_user(username, password):
     u = User(username=username, password=m.hexdigest())
     db.session.add(u)
     db.session.commit()
+
+
+@app.cli.command("sync_db")
+def sync_db():
+    """Creates all missing tables."""
+    db.create_all()

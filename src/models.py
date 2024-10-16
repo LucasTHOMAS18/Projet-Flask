@@ -39,12 +39,25 @@ class User(db.Model, UserMixin):
         return self.username
 
 
-def get_sample() -> list[Book]:
-    return Book.query.limit(10).all()
+def get_sample(limit = 10) -> list[Book]:
+    return Book.query.limit(limit).all()
 
 
 def get_author(id: int) -> Author:
     return Author.query.get(id)
+
+
+def update_author(id: int, name: int) -> Author:
+    author = Author.query.get(id)
+    
+    if author:
+        author.name = name
+    else:
+        author = Author(id=id, name=name)
+        db.session.add(author)
+    
+    db.session.commit()
+    return author
 
 
 def get_book(id: int) -> Book:

@@ -1,46 +1,14 @@
-from hashlib import sha256
-
 from flask import redirect, render_template, request, url_for
-from flask_login import current_user, login_required, login_user, logout_user
-from flask_wtf import FlaskForm
-from wtforms import HiddenField, PasswordField, StringField
-from wtforms.validators import DataRequired
+from flask_login import login_required, login_user, logout_user
 
 from .app import app, db
-from .models import Author, Book, User, get_author, get_book, get_sample
+from .forms import AuthorForm, LoginForm
+from .models import Author, get_author, get_book, get_sample, update_author
 
 
-# Forms
-class AuthorForm(FlaskForm):
-    id = HiddenField('id')
-    name = StringField('Nom', validators=[DataRequired()])
-   
-
-class LoginForm(FlaskForm):
-    username = StringField("Username")
-    password = PasswordField("Password")
-    next = HiddenField()
-    
-    def get_authenticated_user(self):
-        user = User.query.get(self.username.data)
-        
-        if user is None:
-            return None
-        
-        m = sha256()
-        m. update(self.password.data.encode())
-        passwd = m.hexdigest()
-        return user if passwd == user.password else None
-
-
-# Routes
 @app.route("/")
 def home():
-    return render_template(
-        "home.html",
-        title="My Books !",
-        books = get_sample()
-    )
+    return render_template("home.html", title="My Books !", books = get_sample(50))
 
 
 @app.route("/books/<id>")
@@ -55,50 +23,21 @@ def detail_author(id):
     return render_template("author.html", author=author)
 
 
-@app.route("/edit/author/<int:id>")
+@app.route("/add/author", methods=["POST", "GET"])
+@app.route("/edit/author/<int:id>", methods=["POST", "GET"])
 @login_required
-def edit_author(id):
+def save_author(id: int | None = None):
     author = get_author(id)
-    form = AuthorForm(id=author.id, name=author.name)
-    return render_template("edit-author.html", author=author, form=form)
-
-
-@app.route("/add/author")
-@login_required
-def add_author():
-    form = AuthorForm()
-    return render_template("add-author.html", form=form)
-
-
-@app.route("/add/author", methods=["POST"])
-@login_required
-def create_author():
-    author = None
-    form = AuthorForm()
+    form = AuthorForm(id=author.id, name=author.name) if author else AuthorForm()
     
     if form.validate_on_submit():
-        author = Author(name=form.name.data)
-        db.session.add(author)
-        db.session.commit()
-        return redirect(url_for('detail_author', id=author.id)) 
-    
-    return render_template("add-author.html", form=form)
-
-
-@app.route("/save/author", methods=["POST"])
-@login_required
-def save_author():
-    author = None
-    form = AuthorForm()
-    
-    if form.validate_on_submit():
-        id_author = int(form.id.data)
-        author = get_author(id_author)
-        author.name = form.name.data
-        db.session.commit()
+        author_id = int(form.id.data) if form.id.data else None
+        author = update_author(author_id, form.name.data)
+        
         return redirect(url_for('detail_author', id=author.id))
     
-    author = get_author((int(form.id.data)))
+    author_id = int(form.id.data) if form.id.data else None
+    author = update_author(author_id, form.name.data)
     return render_template("edit-author.html", author=author, form=form)
 
 
