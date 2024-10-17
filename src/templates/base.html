@@ -6,6 +6,7 @@
   <title>{{ title }}</title>
   {% block styles %}
   {{bootstrap.load_css()}}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=open_in_new" />
   {% endblock %}
 
   {% endblock%}
@@ -34,9 +35,9 @@
               <li><a class="nav-link active">{{ current_user.username }}</a></li>
             </ul>
             
-              <a class="btn btn-outline-danger me-2" aria-current="page" href="{{ url_for('logout') }}">Logout</a>
+            <a class="btn btn-outline-danger me-2" aria-current="page" href="{{ url_for('logout') }}">Logout</a>
           {% else %}
-              <a class="btn btn-outline-primary me-2" aria-current="page" href="{{ url_for('login') }}">Login</a>
+            <a class="btn btn-outline-primary me-2" aria-current="page" href="{{ url_for('login') }}">Login</a>
           {% endif %}
 
           <form class="d-flex" role="search">
@@ -58,7 +59,6 @@
       <span class="text-muted">Place sticky footer content here.</span>
     </div>
   </footer>
-
 
   {% block scripts %}
   {{ bootstrap.load_js()}}

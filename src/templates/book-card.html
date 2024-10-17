@@ -1,0 +1,16 @@
+{% block card %}
+
+<div class="card m-2 text-start" style="width: 15rem; height:36rem">
+    <img class="card-img-top img-fluid" style="height:20rem; overflow: hidden;" src="{{ url_for('static', filename='images/' + x.img) }}" alt="{{ x.title }}">
+    <div class="card-body">
+        <h5 class="card-title" style="min-height: 4rem; line-height: 1.2;">{{ x.title }}</h5>
+        <p class="card-text" style="min-height: 2rem; line-height: 1.2;">Author: {{ x.author.name }}</p>
+        <p class="card-text">Price: {{ x.price }}€ </p>
+    </div>
+        
+    <div class="card-body text-center">
+        <a href="{{ url_for('detail_book', id=x.id) }}" class="btn btn-primary material-symbols-rounded">open_in_new</a>
+    </div>
+</div>
+
+{% endblock %}
