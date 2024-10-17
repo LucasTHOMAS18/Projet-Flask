@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+{% endblock %}
+
 {% block content %}
   <h1>{{ title }}</h1>
   
@@ -13,11 +18,11 @@
     {% if current_user.is_authenticated %}
         {% if book in current_user.favorite_books %}
             <form action="{{ url_for('remove_favorite', book_id=book.id) }}" method="POST" class="button-container">
-                <button type="submit" class="btn-favorite-remove">Remove from Favorites</button>
+                <button type="submit" class="btn btn-danger">Remove from Favorites</button>
             </form>
         {% else %}
             <form action="{{ url_for('add_favorite', book_id=book.id) }}" method="POST" class="button-container">
-                <button type="submit" class="btn-favorite-add">Add to Favorites</button>
+                <button type="submit" class="btn btn-primary">Add to Favorites</button>
             </form>
         {% endif %}
     {% endif %}
