@@ -41,10 +41,32 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100))
     
     favorite_books = db.relationship('Book', secondary=favorites, backref='favorited_by')
-
     
     def get_id(self):
         return self.username
+
+
+class Rating(db.Model):
+    __tablename__ = 'ratings'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), db.ForeignKey('user.username'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # Rating between 1 to 5
+
+    user = db.relationship('User', backref='user_ratings')
+    book = db.relationship('Book', backref='book_ratings')
+
+
+def get_average_rating(book_id: int):
+    ratings = Rating.query.filter_by(book_id=book_id).all()
+    if not ratings:
+        return 0
+    total = sum(r.rating for r in ratings)
+    return total / len(ratings)
+
+def get_user_rating(book_id: int, user_id: str):
+    rating = Rating.query.filter_by(book_id=book_id, user_id=user_id).first()
+    return rating.rating if rating else None
 
 
 def get_sample(limit = 10) -> list[Book]:

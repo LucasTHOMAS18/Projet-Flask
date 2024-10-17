@@ -1,8 +1,8 @@
 from hashlib import sha256
 
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, PasswordField, StringField
-from wtforms.validators import DataRequired
+from wtforms import HiddenField, IntegerField, PasswordField, StringField
+from wtforms.validators import DataRequired, NumberRange
 
 from .models import Author, Book, User
 

@@ -3,7 +3,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from .app import app, db
 from .forms import AuthorForm, LoginForm
-from .models import get_author, get_book, get_sample, update_author
+from .models import (Rating, get_author, get_average_rating, get_book,
+                     get_sample, get_user_rating, update_author)
 
 
 @app.route("/")
@@ -11,10 +12,16 @@ def home():
     return render_template("home.html", title="My Books !", books = get_sample(10))
 
 
-@app.route("/books/<id>")
+@app.route("/books/<int:id>", methods=["GET"])
 def detail_book(id):
     book = get_book(id)
-    return render_template("book.html", book=book)
+    user_rating = None
+    average_rating = get_average_rating(id)# Instancie le formulaire de notation
+
+    if current_user.is_authenticated:
+        user_rating = get_user_rating(book.id, current_user.username)
+
+    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating)
 
 
 @app.route("/authors/<id>")
@@ -61,6 +68,7 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
+
 # Ajoute un livre en favoris
 @app.route('/favorite/<int:book_id>', methods=['POST'])
 @login_required
@@ -92,3 +100,20 @@ def remove_favorite(book_id):
 @login_required
 def view_favorites():
     return render_template('favorites.html', books=current_user.favorite_books)
+
+
+# System notation
+@app.route("/rate/<int:book_id>", methods=["POST"])
+@login_required
+def rate_book(book_id):
+    rating = Rating.query.filter_by(book_id=book_id, user_id=current_user.username).first()
+    
+    if rating:
+        rating.rating = request.form.get('rating', type=int)
+    else:   
+        new_rating = Rating(user_id=current_user.username, book_id=book_id, rating=request.form.get('rating', type=int))
+        db.session.add(new_rating)
+    
+    db.session.commit()
+    
+    return redirect(url_for('detail_book', id=book_id))
