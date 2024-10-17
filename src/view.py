@@ -1,5 +1,5 @@
 from flask import redirect, render_template, request, url_for
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 
 from .app import app
 from .forms import AuthorForm, LoginForm
@@ -60,3 +60,31 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("home"))
+
+# Ajoute un livre en favoris
+@app.route('/favorite/<int:book_id>', methods=['POST'])
+@login_required
+def add_favorite(book_id):
+    book = get_book(book_id)
+    if book not in current_user.favorite_books:
+        current_user.favorite_books.append(book)
+        db.session.commit()
+    return redirect(url_for('detail_book', id=book_id))
+
+
+# Retire un livre des favoris
+@app.route('/unfavorite/<int:book_id>', methods=['POST'])
+@login_required
+def remove_favorite(book_id):
+    book = get_book(book_id)
+    if book in current_user.favorite_books:
+        current_user.favorite_books.remove(book)
+        db.session.commit()
+    return redirect(url_for('detail_book', id=book_id))
+
+
+# Liste des favoris
+@app.route('/favorites')
+@login_required
+def view_favorites():
+    return render_template('favorites.html', books=current_user.favorite_books)
