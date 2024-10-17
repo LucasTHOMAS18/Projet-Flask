@@ -40,21 +40,21 @@
           
           <h5 class="card-title">Actions: </h5>
           <div class="d-flex">
-            {% if current_user.is_authenticated%}
+            {% if current_user.is_authenticated %}
               {% if book in current_user.favorite_books %}
                 <form action="{{ url_for('remove_favorite', book_id=book.id) }}" method="POST" class="button-container">
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                  <button type="submit" class="btn btn-danger">Remove from Favorites</button>
+                  <button type="submit" style="margin-right: 10px" class="btn btn-danger">Remove from Favorites</button>
                 </form>
               {% else %}
                 <form action="{{ url_for('add_favorite', book_id=book.id) }}" method="POST" class="button-container">
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                  <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                  <button type="submit" style="margin-right: 10px" class="btn btn-primary">Add to Favorites</button>
                 </form>
               {% endif %}
             {% endif %}
             
-            <a href="{{ book.url }}" style="margin-left: 10px" class="btn btn-warning">Buy on Amazon</a>
+            <a href="{{ book.url }}" class="btn btn-warning">Buy on Amazon</a>
           </div>
         </div>
       </div>
