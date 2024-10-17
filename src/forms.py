@@ -1,8 +1,7 @@
 from hashlib import sha256
 
 from flask_wtf import FlaskForm
-from wtforms import (FileField, FloatField, HiddenField, PasswordField,
-                     StringField)
+from wtforms import HiddenField, PasswordField, StringField
 from wtforms.validators import DataRequired
 
 from .models import Author, Book, User
@@ -11,15 +10,6 @@ from .models import Author, Book, User
 class AuthorForm(FlaskForm):
     id = HiddenField("id")
     name = StringField("Nom", validators=[DataRequired()])
-   
-
-class BookForm(FlaskForm):
-    id = HiddenField("id")
-    name = StringField("Nom", validators=[DataRequired()])
-    author = StringField("Auteur", validators=[DataRequired()])
-    url =  StringField("URL")
-    img = FileField(validators=[DataRequired()])
-    prix = FloatField(validators=[DataRequired()])
 
 
 class LoginForm(FlaskForm):
