@@ -1,7 +1,7 @@
 from flask import redirect, render_template, request, url_for
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import current_user, login_required, login_user, logout_user
 
-from .app import app
+from .app import app, db
 from .forms import AuthorForm, LoginForm
 from .models import get_author, get_book, get_sample, update_author
 
@@ -69,7 +69,9 @@ def add_favorite(book_id):
     if book not in current_user.favorite_books:
         current_user.favorite_books.append(book)
         db.session.commit()
-    return redirect(url_for('detail_book', id=book_id))
+    
+    next_url = request.args.get('next', url_for('detail_book', id=book_id))
+    return redirect(next_url)
 
 
 # Retire un livre des favoris
@@ -80,7 +82,9 @@ def remove_favorite(book_id):
     if book in current_user.favorite_books:
         current_user.favorite_books.remove(book)
         db.session.commit()
-    return redirect(url_for('detail_book', id=book_id))
+        
+    next_url = request.args.get('next', url_for('detail_book', id=book_id))
+    return redirect(next_url)
 
 
 # Liste des favoris
