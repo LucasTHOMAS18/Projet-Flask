@@ -16,3 +16,22 @@ footer{
     bottom: 0;
     width: 100%;
 }
+
+
+
+.rating {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+    font-size: 2em;
+}
+
+.rating > span {
+    display: inline-block;
+    position: relative;
+    width: 1.1em;
+}
+
+.rating > span:hover,
+.rating > span:hover ~ span {
+    color: gold;
+}

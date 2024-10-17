@@ -14,8 +14,22 @@
     <a href="{{ url_for('detail_author', id=book.author.id) }}">{{ book.author.name }}</a>
     <p><i>{{ book.price }}€</i></p>
     <a href="{{book.url}}">Buy on Amazon</a>
-    
+
+    <!-- Display average rating -->
+    <h3>Average Rating: {{ average_rating }} / 5</h3>
+
     {% if current_user.is_authenticated %}
+        <!-- Display user's rating and rating form -->
+        <h4>Your Rating: {{ user_rating if user_rating else 'Not rated yet' }}</h4>
+        <form action="{{ url_for('rate_book', book_id=book.id) }}" method="POST">
+            {{ form.hidden_tag() }}
+            <div>
+                {{ form.rating.label }} {{ form.rating() }}
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Rating</button>
+        </form>
+
+        <!-- Existing favorites functionality -->
         {% if book in current_user.favorite_books %}
             <form action="{{ url_for('remove_favorite', book_id=book.id) }}" method="POST" class="button-container">
                 <button type="submit" class="btn btn-danger">Remove from Favorites</button>
