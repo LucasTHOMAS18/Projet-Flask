@@ -13,12 +13,12 @@
         {% if x in current_user.favorite_books %}
         <form action="{{ url_for('remove_favorite', book_id=x.id, next=url_for('home'))}}" method="POST">
             <a href="{{ url_for('detail_book', id=x.id) }}" class="btn btn-primary material-icons">open_in_new</a>
-            <button type="submit" class="btn btn-primary material-icons">bookmark_remove</button>
+            <button type="submit" class="btn btn-danger material-icons">bookmark_remove</button>
         </form>
         {% else %}
         <form action="{{ url_for('add_favorite', book_id=x.id, next=url_for('home')) }}" method="POST">
             <a href="{{ url_for('detail_book', id=x.id) }}" class="btn btn-primary material-icons">open_in_new</a>
-            <button type="submit" class="btn btn-primary material-icons">bookmark_add</button>
+            <button type="submit" class="btn btn-warning material-icons">bookmark_add</button>
         </form>
         {% endif %}
     </div>
