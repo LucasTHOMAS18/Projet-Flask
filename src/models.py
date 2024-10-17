@@ -41,7 +41,6 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(100))
     
     favorite_books = db.relationship('Book', secondary=favorites, backref='favorited_by')
-
     
     def get_id(self):
         return self.username
@@ -56,6 +55,7 @@ class Rating(db.Model):
 
     user = db.relationship('User', backref='user_ratings')
     book = db.relationship('Book', backref='book_ratings')
+
 
 def get_average_rating(book_id: int):
     ratings = Rating.query.filter_by(book_id=book_id).all()

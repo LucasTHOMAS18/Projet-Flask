@@ -8,37 +8,57 @@
 {% block content %}
   <h1>{{ title }}</h1>
   
-  <div class="sample">
-    <img src="{{ url_for('static', filename='images/' + book.img) }}" alt="{{ book.title }}" title="{{ book.title }}">
-    <h1>{{ book.title }}</h1>
-    <a href="{{ url_for('detail_author', id=book.author.id) }}">{{ book.author.name }}</a>
-    <p><i>{{ book.price }}€</i></p>
-    <a href="{{book.url}}">Buy on Amazon</a>
+  <div class="card mb-3">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="{{ url_for('static', filename='images/' + book.img) }}" class="img-fluid rounded-start" style="height: 100%; width: 100%; object-fit: cover;" alt="{{ book.title }}">
+      </div>
 
-    <!-- Display average rating -->
-    <h3>Average Rating: {{ average_rating }} / 5</h3>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h4 class="card-title">{{ book.title }}</h5>
+          <a class="card-text" href="{{ url_for('detail_author', id=book.author.id) }}">{{ book.author.name }}</a>
+          <p class="card-text">Price: {{ book.price }}€</p>
 
-    {% if current_user.is_authenticated %}
-        <!-- Display user's rating and rating form -->
-        <h4>Your Rating: {{ user_rating if user_rating else 'Not rated yet' }}</h4>
-        <form action="{{ url_for('rate_book', book_id=book.id) }}" method="POST">
-            {{ form.hidden_tag() }}
-            <div>
-                {{ form.rating.label }} {{ form.rating() }}
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Rating</button>
-        </form>
+          <h5 class="card-title">Ratings: </h5>
+          <p class="card-text">Average Rating: {{ average_rating }}</h3>
+          {% if current_user.is_authenticated %}
+            <p class="card-text">Your Rating: {{ user_rating if user_rating else 'Not rated yet' }} / 5 </p>
 
-        <!-- Existing favorites functionality -->
-        {% if book in current_user.favorite_books %}
-            <form action="{{ url_for('remove_favorite', book_id=book.id) }}" method="POST" class="button-container">
-                <button type="submit" class="btn btn-danger">Remove from Favorites</button>
+            <form class="card-text mb-2" action="{{ url_for('rate_book', book_id=book.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              
+              <div class="btn-group" aria-label="Basic example">
+                <button type="submit" name="rating" value="1" class="btn btn-warning">1</button>
+                <button type="submit" name="rating" value="2" class="btn btn-warning">2</button>
+                <button type="submit" name="rating" value="3" class="btn btn-warning">3</button>
+                <button type="submit" name="rating" value="4" class="btn btn-warning">4</button>
+                <button type="submit" name="rating" value="5" class="btn btn-warning">5</button>
+              </div>
             </form>
-        {% else %}
-            <form action="{{ url_for('add_favorite', book_id=book.id) }}" method="POST" class="button-container">
-                <button type="submit" class="btn btn-primary">Add to Favorites</button>
-            </form>
-        {% endif %}
-    {% endif %}
+          {% endif %}
+          
+          <h5 class="card-title">Actions: </h5>
+          <div class="d-flex">
+            {% if current_user.is_authenticated%}
+              {% if book in current_user.favorite_books %}
+                <form action="{{ url_for('remove_favorite', book_id=book.id) }}" method="POST" class="button-container">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-danger">Remove from Favorites</button>
+                </form>
+              {% else %}
+                <form action="{{ url_for('add_favorite', book_id=book.id) }}" method="POST" class="button-container">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button type="submit" class="btn btn-primary">Add to Favorites</button>
+                </form>
+              {% endif %}
+            {% endif %}
+            
+            <a href="{{ book.url }}" style="margin-left: 10px" class="btn btn-warning">Buy on Amazon</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 {% endblock %}

@@ -1,9 +1,10 @@
 from flask import redirect, render_template, request, url_for
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import current_user, login_required, login_user, logout_user
 
 from .app import app, db
-from .forms import AuthorForm, LoginForm, RatingForm
-from .models import get_author, get_book, get_sample, update_author, Rating, get_average_rating, get_user_rating
+from .forms import AuthorForm, LoginForm
+from .models import (Rating, get_author, get_average_rating, get_book,
+                     get_sample, get_user_rating, update_author)
 
 
 @app.route("/")
@@ -15,13 +16,12 @@ def home():
 def detail_book(id):
     book = get_book(id)
     user_rating = None
-    average_rating = get_average_rating(id)
-    form = RatingForm()  # Instancie le formulaire de notation
+    average_rating = get_average_rating(id)# Instancie le formulaire de notation
 
     if current_user.is_authenticated:
         user_rating = get_user_rating(book.id, current_user.username)
 
-    return render_template("book.html", book=book, form=form, user_rating=user_rating, average_rating=average_rating)
+    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating)
 
 
 @app.route("/authors/<id>")
@@ -68,6 +68,7 @@ def logout():
     logout_user()
     return redirect(url_for("home"))
 
+
 # Ajoute un livre en favoris
 @app.route('/favorite/<int:book_id>', methods=['POST'])
 @login_required
@@ -101,15 +102,14 @@ def view_favorites():
 @app.route("/rate/<int:book_id>", methods=["POST"])
 @login_required
 def rate_book(book_id):
-    form = RatingForm()
-
-    if form.validate_on_submit():
-        rating = Rating.query.filter_by(book_id=book_id, user_id=current_user.username).first()
-        if rating:
-            rating.rating = form.rating.data  # Update the existing rating
-        else:   
-            new_rating = Rating(user_id=current_user.username, book_id=book_id, rating=form.rating.data)
-            db.session.add(new_rating)
-        db.session.commit()
-        return redirect(url_for('detail_book', id=book_id))
+    rating = Rating.query.filter_by(book_id=book_id, user_id=current_user.username).first()
+    
+    if rating:
+        rating.rating = request.form.get('rating', type=int)
+    else:   
+        new_rating = Rating(user_id=current_user.username, book_id=book_id, rating=request.form.get('rating', type=int))
+        db.session.add(new_rating)
+    
+    db.session.commit()
+    
     return redirect(url_for('detail_book', id=book_id))
