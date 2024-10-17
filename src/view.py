@@ -8,7 +8,7 @@ from .models import get_author, get_book, get_sample, update_author
 
 @app.route("/")
 def home():
-    return render_template("home.html", title="My Books !", books = get_sample(50))
+    return render_template("home.html", title="My Books !", books = get_sample(10))
 
 
 @app.route("/books/<id>")
