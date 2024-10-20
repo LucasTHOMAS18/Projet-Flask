@@ -21,7 +21,7 @@
           <p class="card-text">Price: {{ book.price }}€</p>
 
           <h5 class="card-title">Ratings: </h5>
-          <p class="card-text">Average Rating: {{ average_rating }}</h3>
+          <p class="card-text">Average Rating: {{ average_rating }}</p>
           {% if current_user.is_authenticated %}
             <p class="card-text">Your Rating: {{ user_rating if user_rating else 'Not rated yet' }} / 5 </p>
           {% endif %}
@@ -65,7 +65,7 @@
   </div>
   {% if current_user.is_authenticated %}
     <h3>Laissez un commentaire</h3>
-    <form method="POST" class="comment-form p-3 bg-light rounded shadow-sm">
+    <form action="{{ url_for('detail_book', id=book.id) }}" method="POST" class="p-3 bg-light rounded shadow-sm">
       {{ form.hidden_tag() }}
     
       <div class="mb-3">
@@ -74,7 +74,7 @@
       </div>
     
       <div class="mb-3">
-        {{ form.content.label(class="form-label fw-bold") }}
+        <label for="content" class="form-label fw-bold">Votre commentaire:</label>
         {{ form.content(class="form-control", placeholder="Votre commentaire...") }}
       </div>
     

@@ -8,19 +8,35 @@ from .models import (Rating, get_author, get_average_rating, get_book,
 
 @app.route("/")
 def home():
-    return render_template("home.html", title="My Books !", books = get_sample(10))
+    return render_template("home.html", title="My Books !", books=get_sample(10))
 
 
 @app.route("/books/<int:id>", methods=["GET", "POST"])
 def detail_book(id):
     book = get_book(id)
     form = CommentForm()
-    comments = Comment.query.filter_by(book_id=id).order_by(Comment.timestamp.desc()).all()
-
-
+    comments = get_comments(id)
+    
     if form.validate_on_submit():
-        existing_comment = Comment.query.filter_by(user_id=current_user.username, book_id=id).first()
-        
+        if process_comment_form(form, id):
+            # Redirection après soumission pour éviter le double envoi
+            return redirect(url_for('detail_book', id=id))
+
+    user_rating = get_user_rating_for_book(book.id)
+    average_rating = get_average_rating(book.id)
+
+    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating, form=form, comments=comments)
+
+
+
+def get_comments(book_id):
+    return Comment.query.filter_by(book_id=book_id).order_by(Comment.timestamp.desc()).all()
+
+
+def process_comment_form(form, book_id):
+    existing_comment = Comment.query.filter_by(user_id=current_user.username, book_id=book_id).first()
+    
+    if form.validate_on_submit():
         if existing_comment:
             existing_comment.content = form.content.data
             existing_comment.rating = form.rating.data
@@ -28,7 +44,7 @@ def detail_book(id):
         else:
             new_comment = Comment(
                 user_id=current_user.username,
-                book_id=id,
+                book_id=book_id,
                 content=form.content.data,
                 rating=form.rating.data
             )
@@ -37,11 +53,15 @@ def detail_book(id):
 
         db.session.commit()
 
-    user_rating = get_user_rating(book.id, current_user.username) if current_user.is_authenticated else None
-    average_rating = get_average_rating(book.id)
+        # Redirige pour éviter une nouvelle soumission avec le bouton de retour en arrière
+        return True
 
-    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating, form=form, comments=comments)
+    return False
 
+
+
+def get_user_rating_for_book(book_id):
+    return get_user_rating(book_id, current_user.username) if current_user.is_authenticated else None
 
 
 @app.route("/authors/<id>")
@@ -89,7 +109,6 @@ def logout():
     return redirect(url_for("home"))
 
 
-# Ajoute un livre en favoris
 @app.route('/favorite/<int:book_id>', methods=['POST'])
 @login_required
 def add_favorite(book_id):
@@ -102,7 +121,6 @@ def add_favorite(book_id):
     return redirect(next_url)
 
 
-# Retire un livre des favoris
 @app.route('/unfavorite/<int:book_id>', methods=['POST'])
 @login_required
 def remove_favorite(book_id):
@@ -115,14 +133,12 @@ def remove_favorite(book_id):
     return redirect(next_url)
 
 
-# Liste des favoris
 @app.route('/favorites')
 @login_required
 def view_favorites():
     return render_template('favorites.html', books=current_user.favorite_books)
 
 
-# System notation
 @app.route("/rate/<int:book_id>", methods=["POST"])
 @login_required
 def rate_book(book_id):
