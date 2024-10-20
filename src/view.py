@@ -4,12 +4,14 @@ from flask_login import current_user, login_required, login_user, logout_user
 from .app import app, db
 from .forms import AuthorForm, LoginForm
 from .models import (Rating, get_author, get_average_rating, get_book,
-                     get_sample, get_user_rating, update_author)
+                     get_book_amount, get_sample, get_user_rating,
+                     update_author)
 
 
 @app.route("/")
-def home():
-    return render_template("home.html", title="My Books !", books = get_sample(10))
+@app.route("/<int:page>")
+def home(page = 1):
+    return render_template("home.html", title="My Books !", books = get_sample(10, (page - 1) * 10), pages=range(1, (get_book_amount() // 10) + 1))
 
 
 @app.route("/books/<int:id>", methods=["GET"])

@@ -69,9 +69,12 @@ def get_user_rating(book_id: int, user_id: str):
     return rating.rating if rating else None
 
 
-def get_sample(limit = 10) -> list[Book]:
-    return Book.query.limit(limit).all()
+def get_sample(limit = 10, offset: int = 0) -> list[Book]:
+    return Book.query.offset(offset).limit(limit).all()
 
+
+def get_book_amount() -> int:
+    return Book.query.count()
 
 def get_author(id: int) -> Author:
     return Author.query.get(id)
