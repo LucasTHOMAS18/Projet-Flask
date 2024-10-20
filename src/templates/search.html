@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+{% endblock %}
+
+{% block content %}
+  <div class="d-flex">
+    <h1>{{ title }}</h1>
+    <form class="d-flex" role="search" action="{{ url_for('search')}}" method="get">
+      <input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
+      
+      <select class="me-2 form-select" name="search_by" aria-label="Search by">
+        <option value="title">Title</option>
+        <option value="author">Author</option>
+      </select> 
+    
+      <select class="me-2 form-select" name="order_by" aria-label="Order by">
+        <option value="alpha">Alphabetical</option>
+        <option value="price">Price</option>
+      </select> 
+    
+      <button class="btn btn-outline-primary" type="submit">Search</button>
+    </form>
+    
+  </div>
+  <div class="sample d-flex flex-wrap">
+    {% for x in books %}
+      {% include 'book-card.html' %}
+    {% endfor %}
+  </div>
+{% endblock %}
