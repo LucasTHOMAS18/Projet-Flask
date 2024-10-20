@@ -1,9 +1,9 @@
-from flask import flash, redirect, render_template, request, url_for
+from flask import redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 from .app import app, db
-from .forms import AuthorForm, CommentForm, LoginForm
-from .models import (Comment, Rating, get_author, get_average_rating, get_book,
+from .forms import AuthorForm, LoginForm
+from .models import (Rating, get_author, get_average_rating, get_book,
                      get_book_amount, get_sample, get_user_rating,
                      search_books, update_author)
 
@@ -14,7 +14,7 @@ def home(page = 1):
     return render_template("home.html", title="My Books !", books = get_sample(10, (page - 1) * 10), pages=range(1, (get_book_amount() // 10) + 1))
 
 
-@app.route("/books/<int:id>", methods=["GET", "POST"])
+@app.route("/books/<int:id>", methods=["GET"])
 def detail_book(id):
     book = get_book(id)
     form = CommentForm()
@@ -64,7 +64,7 @@ def process_comment_form(form, book_id):
 def get_user_rating_for_book(book_id):
     return get_user_rating(book_id, current_user.username) if current_user.is_authenticated else None
 
-
+  
 @app.route("/authors/<id>")
 def detail_author(id):
     author = get_author(id)

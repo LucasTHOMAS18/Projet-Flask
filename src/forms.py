@@ -1,7 +1,7 @@
 from hashlib import sha256
 
 from flask_wtf import FlaskForm
-from wtforms import HiddenField, IntegerField, PasswordField, StringField, TextAreaField
+from wtforms import HiddenField, IntegerField, PasswordField, StringField
 from wtforms.validators import DataRequired, NumberRange
 
 from .models import Author, Book, User
@@ -27,8 +27,3 @@ class LoginForm(FlaskForm):
         m. update(self.password.data.encode())
         passwd = m.hexdigest()
         return user if passwd == user.password else None
-
-
-class CommentForm(FlaskForm):
-    rating = IntegerField('Votre note (1-5)', validators=[DataRequired(), NumberRange(min=1, max=5)])
-    content = TextAreaField('Votre commentaire', validators=[DataRequired()])
