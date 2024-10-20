@@ -11,4 +11,12 @@
       {% include 'book-card.html' %}
     {% endfor %}
   </div>
+
+  <div class="d-flex justify-content-center mb-4">
+    <div class="btn-group">
+      {% for x in pages %}
+        <a href="{{url_for('home', page=x)}}" class="btn btn-primary">{{ x }}</a>
+      {% endfor %}
+    </div>
+  </div>
 {% endblock %}
