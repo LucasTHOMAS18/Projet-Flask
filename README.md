@@ -29,6 +29,5 @@ flask new_user <speudo> <mdp>
   * Tri par ordre alphabétique
   * Tri par prix
 * Système de notation
-* Système de commentaires
 * Intégration complète de Bootstrap
 * Édition des auteurs
