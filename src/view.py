@@ -22,7 +22,6 @@ def detail_book(id):
     
     if form.validate_on_submit():
         if process_comment_form(form, id):
-            # Redirection après soumission pour éviter le double envoi
             return redirect(url_for('detail_book', id=id))
 
     user_rating = get_user_rating_for_book(book.id)
@@ -56,7 +55,6 @@ def process_comment_form(form, book_id):
 
         db.session.commit()
 
-        # Redirige pour éviter une nouvelle soumission avec le bouton de retour en arrière
         return True
 
     return False
