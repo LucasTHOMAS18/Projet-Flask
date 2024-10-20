@@ -21,7 +21,7 @@
           <p class="card-text">Price: {{ book.price }}€</p>
 
           <h5 class="card-title">Ratings: </h5>
-          <p class="card-text">Average Rating: {{ average_rating }}</p>
+          <p class="card-text">Average Rating: {{ average_rating }}</h3>
           {% if current_user.is_authenticated %}
             <p class="card-text">Your Rating: {{ user_rating if user_rating else 'Not rated yet' }} / 5 </p>
 
@@ -60,38 +60,5 @@
       </div>
     </div>
   </div>
-  <h3>Commentaires</h3>
-  <div class="comment-section">
-    {% for comment in comments %}
-      <div class="card mb-3">
-        <div class="card-body">
-          <h5 class="card-title">{{ comment.user_id }} a noté {{ comment.rating }} / 5</h5>
-          <p class="card-text">{{ comment.content }}</p>
-          <p class="text-muted">Posté le {{ comment.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
-        </div>
-      </div>
-    {% else %}
-      <p>Aucun commentaire pour ce livre.</p>
-    {% endfor %}
-  </div>
-  {% if current_user.is_authenticated %}
-    <h3>Laissez un commentaire</h3>
-    <form action="{{ url_for('detail_book', id=book.id) }}" method="POST" class="p-3 bg-light rounded shadow-sm">
-      {{ form.hidden_tag() }}
-    
-      <div class="mb-3">
-        <label for="rating" class="form-label fw-bold">Votre note (1-5):</label>
-        {{ form.rating(class="form-select w-auto d-inline-block") }}
-      </div>
-    
-      <div class="mb-3">
-        <label for="content" class="form-label fw-bold">Votre commentaire:</label>
-        {{ form.content(class="form-control", placeholder="Votre commentaire...") }}
-      </div>
-    
-      <button type="submit" class="btn btn-success">Soumettre</button>
-    </form>
-  {% else %}
-    <p>Veuillez <a href="{{ url_for('login') }}">vous connecter</a> pour laisser un commentaire.</p>
-  {% endif %}
+</div>
 {% endblock %}
