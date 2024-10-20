@@ -1,27 +1,47 @@
-from flask import redirect, render_template, request, url_for
+from flask import redirect, render_template, request, url_for, flash
 from flask_login import current_user, login_required, login_user, logout_user
 
 from .app import app, db
-from .forms import AuthorForm, LoginForm
+from .forms import AuthorForm, LoginForm, CommentForm
 from .models import (Rating, get_author, get_average_rating, get_book,
-                     get_sample, get_user_rating, update_author)
-
+                     get_sample, get_user_rating, update_author, Comment)
 
 @app.route("/")
 def home():
     return render_template("home.html", title="My Books !", books = get_sample(10))
 
 
-@app.route("/books/<int:id>", methods=["GET"])
+@app.route("/books/<int:id>", methods=["GET", "POST"])
 def detail_book(id):
     book = get_book(id)
-    user_rating = None
-    average_rating = get_average_rating(id)# Instancie le formulaire de notation
+    form = CommentForm()
+    comments = Comment.query.filter_by(book_id=id).order_by(Comment.timestamp.desc()).all()
 
-    if current_user.is_authenticated:
-        user_rating = get_user_rating(book.id, current_user.username)
 
-    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating)
+    if form.validate_on_submit():
+        existing_comment = Comment.query.filter_by(user_id=current_user.username, book_id=id).first()
+        
+        if existing_comment:
+            existing_comment.content = form.content.data
+            existing_comment.rating = form.rating.data
+            flash("Votre commentaire et votre note ont été mis à jour.", "info")
+        else:
+            new_comment = Comment(
+                user_id=current_user.username,
+                book_id=id,
+                content=form.content.data,
+                rating=form.rating.data
+            )
+            db.session.add(new_comment)
+            flash("Votre commentaire a été ajouté.", "success")
+
+        db.session.commit()
+
+    user_rating = get_user_rating(book.id, current_user.username) if current_user.is_authenticated else None
+    average_rating = get_average_rating(book.id)
+
+    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating, form=form, comments=comments)
+
 
 
 @app.route("/authors/<id>")

@@ -2,6 +2,7 @@ import os.path
 
 import yaml
 from flask_login import UserMixin
+from datetime import datetime
 
 from .app import db, login_manager
 from .utils import mkpath
@@ -57,16 +58,34 @@ class Rating(db.Model):
     book = db.relationship('Book', backref='book_ratings')
 
 
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50), db.ForeignKey('user.username'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey('book.id'), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    rating = db.Column(db.Integer, nullable=False)  # Note entre 1 et 5
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='comments')
+    book = db.relationship('Book', backref='comments')
+
+
 def get_average_rating(book_id: int):
     ratings = Rating.query.filter_by(book_id=book_id).all()
-    if not ratings:
+    comments = Comment.query.filter_by(book_id=book_id).all()
+    
+    all_ratings = [r.rating for r in ratings] + [c.rating for c in comments]
+    
+    if not all_ratings:
         return 0
-    total = sum(r.rating for r in ratings)
-    return total / len(ratings)
+    
+    total = sum(all_ratings)
+    return total / len(all_ratings)
 
 def get_user_rating(book_id: int, user_id: str):
-    rating = Rating.query.filter_by(book_id=book_id, user_id=user_id).first()
-    return rating.rating if rating else None
+    comment = Comment.query.filter_by(book_id=book_id, user_id=user_id).first()
+    return comment.rating if comment else None
 
 
 def get_sample(limit = 10) -> list[Book]:
