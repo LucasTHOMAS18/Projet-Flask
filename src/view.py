@@ -1,12 +1,12 @@
-from flask import redirect, render_template, request, url_for, flash
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 from .app import app, db
-from .forms import AuthorForm, LoginForm, CommentForm
-from .models import (Rating, get_author, get_average_rating, get_book,
-                     get_sample, get_user_rating, update_author, Comment)
-                     get_book_amount,
+from .forms import AuthorForm, CommentForm, LoginForm
+from .models import (Comment, Rating, get_author, get_average_rating, get_book,
+                     get_book_amount, get_sample, get_user_rating,
                      search_books, update_author)
+
 
 @app.route("/")
 @app.route("/<int:page>")
