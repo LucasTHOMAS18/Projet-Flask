@@ -17,15 +17,54 @@ def home(page = 1):
 @app.route("/books/<int:id>", methods=["GET"])
 def detail_book(id):
     book = get_book(id)
-    user_rating = None
-    average_rating = get_average_rating(id)# Instancie le formulaire de notation
+    form = CommentForm()
+    comments = get_comments(id)
+    
+    if form.validate_on_submit():
+        if process_comment_form(form, id):
+            return redirect(url_for('detail_book', id=id))
 
-    if current_user.is_authenticated:
-        user_rating = get_user_rating(book.id, current_user.username)
+    user_rating = get_user_rating_for_book(book.id)
+    average_rating = get_average_rating(book.id)
 
-    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating)
+    return render_template("book.html", book=book, user_rating=user_rating, average_rating=average_rating, form=form, comments=comments)
 
 
+
+def get_comments(book_id):
+    return Comment.query.filter_by(book_id=book_id).order_by(Comment.timestamp.desc()).all()
+
+
+def process_comment_form(form, book_id):
+    existing_comment = Comment.query.filter_by(user_id=current_user.username, book_id=book_id).first()
+    
+    if form.validate_on_submit():
+        if existing_comment:
+            existing_comment.content = form.content.data
+            existing_comment.rating = form.rating.data
+            flash("Votre commentaire et votre note ont été mis à jour.", "info")
+        else:
+            new_comment = Comment(
+                user_id=current_user.username,
+                book_id=book_id,
+                content=form.content.data,
+                rating=form.rating.data
+            )
+            db.session.add(new_comment)
+            flash("Votre commentaire a été ajouté.", "success")
+
+        db.session.commit()
+
+        return True
+
+    return False
+
+
+
+def get_user_rating_for_book(book_id):
+    return get_user_rating(book_id, current_user.username) if current_user.is_authenticated else None
+
+  
 @app.route("/authors/<id>")
 def detail_author(id):
     author = get_author(id)
@@ -71,7 +110,6 @@ def logout():
     return redirect(url_for("home"))
 
 
-# Ajoute un livre en favoris
 @app.route('/favorite/<int:book_id>', methods=['POST'])
 @login_required
 def add_favorite(book_id):
@@ -84,7 +122,6 @@ def add_favorite(book_id):
     return redirect(next_url)
 
 
-# Retire un livre des favoris
 @app.route('/unfavorite/<int:book_id>', methods=['POST'])
 @login_required
 def remove_favorite(book_id):
@@ -97,14 +134,12 @@ def remove_favorite(book_id):
     return redirect(next_url)
 
 
-# Liste des favoris
 @app.route('/favorites')
 @login_required
 def view_favorites():
     return render_template('favorites.html', books=current_user.favorite_books)
 
 
-# System notation
 @app.route("/rate/<int:book_id>", methods=["POST"])
 @login_required
 def rate_book(book_id):

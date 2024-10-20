@@ -54,7 +54,7 @@
     </div>
   </main>
   
-  <footer class="footer mt-auto py-3 bg-dark text-light">
+  <footer class="bg-dark text-white py-4 mt-auto">
     <div class="container">
       <div class="row">
         <div class="col-md-4">
@@ -66,22 +66,25 @@
         </div>
         <div class="col-md-4">
           <h5>Projet</h5>
-          <p>PROJET SITE WEB FLASK</p>
+          <ul class="list-unstyled">
+            <li>PROJET SITE WEB FLASK</li>
+          </ul>
         </div>
         <div class="col-md-4">
           <h5>Liens Utiles</h5>
           <ul class="list-unstyled">
-            <li><a href="/" class="text-light">Accueil</a></li>
-            <li><a href="/favorites" class="text-light">Favoris</a></li>
-            <li><a href="/login" class="text-light">Connexion</a></li>
+            <li><a href="{{ url_for('home') }}" class="text-white">Accueil</a></li>
+            <li><a href="{{ url_for('view_favorites') }}" class="text-white">Favoris</a></li>
+            <li><a href="{{ url_for('login') }}" class="text-white">Connexion</a></li>
           </ul>
         </div>
       </div>
-      <div class="text-center pt-3">
+      <div class="text-center mt-4">
         <small>&copy; 2024 - Tous droits réservés</small>
       </div>
     </div>
-  </footer>  
+  </footer>
+  
 
   {% block scripts %}
   {{ bootstrap.load_js()}}
