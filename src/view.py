@@ -5,7 +5,7 @@ from .app import app, db
 from .forms import AuthorForm, LoginForm
 from .models import (Rating, get_author, get_average_rating, get_book,
                      get_book_amount, get_sample, get_user_rating,
-                     update_author)
+                     search_books, update_author)
 
 
 @app.route("/")
@@ -119,3 +119,13 @@ def rate_book(book_id):
     db.session.commit()
     
     return redirect(url_for('detail_book', id=book_id))
+
+# Systeme de recherche
+@app.route("/search", methods=["get"])
+def search():
+    query = request.args.get("search")
+    search_by = request.args.get("search_by", "title")
+    order_by = request.args.get("order_by", "alpha")
+    
+    res = search_books(query, search_by, order_by)
+    return render_template('search.html', books=res)

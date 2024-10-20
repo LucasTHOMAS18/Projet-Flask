@@ -100,3 +100,35 @@ def get_book(id: int) -> Book:
 @login_manager.user_loader
 def load_user(username):
     return User.query.get(username)
+
+
+def search_books(query: str, search_by: str, sort_by: str):
+    print(query, search_by, sort_by)
+
+    search_results = Book.query
+    
+    if search_by == "author":
+        search_results = search_results.join(Book.author).filter(Author.name.like(f"%{query}%"))
+    elif search_by == "title":
+        search_results = search_results.filter(Book.title.like(f"%{query}%"))
+    else:
+        print(f"Can't search by {search_by}")
+        return []
+
+    print(search_results.all())
+    
+    if sort_by == "alpha":
+        if search_by == "author":
+            search_results = search_results.order_by(Author.name)
+        else:
+            search_results = search_results.order_by(Book.title)
+    elif sort_by == "price":
+        search_results = search_results.order_by(Book.price)
+    else:
+        print(f"Can't sort by {sort_by}")
+        return []
+
+    print(search_results.all())
+    
+    return search_results.all()
+
