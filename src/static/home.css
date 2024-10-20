@@ -11,8 +11,58 @@ main{
     margin-top: 8em;
 }
 
-footer{
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+footer {
+    background-color: #343a40;
+    color: #ffffff;
+    padding: 20px 0;
+    margin-top: 30px;
+    border-top: 1px solid #444;
 }
+
+footer h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+footer ul {
+    padding-left: 0;
+    list-style: none;
+}
+
+footer ul li {
+    margin-bottom: 10px;
+}
+
+footer ul li a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+footer ul li a:hover {
+    color: #cccccc;
+}
+
+footer .text-center {
+    margin-top: 20px;
+}
+
+footer small {
+    color: #cccccc;
+}
+
+.footer .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.footer .col-md-4 {
+    flex: 1;
+    margin: 15px 0;
+}
+
+.footer a:hover {
+    text-decoration: underline;
+}
+

@@ -54,11 +54,34 @@
     </div>
   </main>
   
-  <footer class="footer mt-auto py-3 bg-light">
+  <footer class="footer mt-auto py-3 bg-dark text-light">
     <div class="container">
-      <span class="text-muted">Place sticky footer content here.</span>
+      <div class="row">
+        <div class="col-md-4">
+          <h5>Participants</h5>
+          <ul class="list-unstyled">
+            <li>Lucas THOMAS</li>
+            <li>Yasin KESKIN</li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Projet</h5>
+          <p>PROJET SITE WEB FLASK</p>
+        </div>
+        <div class="col-md-4">
+          <h5>Liens Utiles</h5>
+          <ul class="list-unstyled">
+            <li><a href="/" class="text-light">Accueil</a></li>
+            <li><a href="/favorites" class="text-light">Favoris</a></li>
+            <li><a href="/login" class="text-light">Connexion</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="text-center pt-3">
+        <small>&copy; 2024 - Tous droits réservés</small>
+      </div>
     </div>
-  </footer>
+  </footer>  
 
   {% block scripts %}
   {{ bootstrap.load_js()}}
