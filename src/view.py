@@ -1,14 +1,17 @@
-from flask import redirect, render_template, request, url_for, flash
+from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 from .app import app, db
-from .forms import AuthorForm, LoginForm, CommentForm
-from .models import (Rating, get_author, get_average_rating, get_book,
-                     get_sample, get_user_rating, update_author, Comment)
+from .forms import AuthorForm, CommentForm, LoginForm
+from .models import (Comment, Rating, get_author, get_average_rating, get_book,
+                     get_book_amount, get_sample, get_user_rating,
+                     search_books, update_author)
+
 
 @app.route("/")
-def home():
-    return render_template("home.html", title="My Books !", books=get_sample(10))
+@app.route("/<int:page>")
+def home(page = 1):
+    return render_template("home.html", title="My Books !", books = get_sample(10, (page - 1) * 10), pages=range(1, (get_book_amount() // 10) + 1))
 
 
 @app.route("/books/<int:id>", methods=["GET", "POST"])
@@ -153,3 +156,13 @@ def rate_book(book_id):
     db.session.commit()
     
     return redirect(url_for('detail_book', id=book_id))
+
+# Systeme de recherche
+@app.route("/search", methods=["get"])
+def search():
+    query = request.args.get("search")
+    search_by = request.args.get("search_by", "title")
+    order_by = request.args.get("order_by", "alpha")
+    
+    res = search_books(query, search_by, order_by)
+    return render_template('search.html', books=res)
