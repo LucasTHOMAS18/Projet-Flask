@@ -9,7 +9,7 @@ from .models import Author, Book, User
 
 @app.cli.command("load_db")
 @click.argument("filename")
-def load_bd(filename):
+def load_db(filename):
     """Creates the tables and populates them with data."""
 
     db.create_all()
