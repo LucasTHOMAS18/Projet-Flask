@@ -132,3 +132,6 @@ def search_books(query: str, search_by: str, sort_by: str):
     
     return search_results.all()
 
+
+def get_authors():
+    return Author.query.all()

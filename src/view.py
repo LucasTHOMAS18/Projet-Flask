@@ -3,8 +3,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 
 from .app import app, db
 from .forms import AuthorForm, LoginForm
-from .models import (Rating, get_author, get_average_rating, get_book,
-                     get_book_amount, get_sample, get_user_rating,
+from .models import (Rating, get_author, get_authors, get_average_rating,
+                     get_book, get_book_amount, get_sample, get_user_rating,
                      search_books, update_author)
 
 
@@ -12,6 +12,11 @@ from .models import (Rating, get_author, get_average_rating, get_book,
 @app.route("/<int:page>")
 def home(page = 1):
     return render_template("home.html", title="My Books !", books = get_sample(10, (page - 1) * 10), pages=range(1, (get_book_amount() // 10) + 1))
+
+
+@app.route("/authors")
+def authors():
+    return render_template("authors.html", authors=get_authors())
 
 
 @app.route("/books/<int:id>", methods=["GET"])
@@ -68,7 +73,7 @@ def login():
 @app.route("/logout/")
 def logout():
     logout_user()
-    return redirect(url_for("home"))
+    return redirect(request.args.get("next", url_for("home")))
 
 
 # Ajoute un livre en favoris
