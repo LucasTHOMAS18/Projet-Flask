@@ -17,13 +17,13 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <a href="{{ url_for('detail_book', id=x.id) }}" class="btn btn-primary material-icons">open_in_new</a>
                 <button type="submit" class="btn btn-danger material-icons">bookmark_remove</button>
-            </form>
+            </form>      
             {% else %}
             <form action="{{ url_for('add_favorite', book_id=x.id, next=request.path)}}" method="POST">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <a href="{{ url_for('detail_book', id=x.id) }}" class="btn btn-primary material-icons">open_in_new</a>
                 <button type="submit" class="btn btn-warning material-icons">bookmark_add</button>
-            </form>
+            </form>                   
             {% endif %}
 
         {% else %}
