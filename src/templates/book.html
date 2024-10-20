@@ -24,6 +24,18 @@
           <p class="card-text">Average Rating: {{ average_rating }}</p>
           {% if current_user.is_authenticated %}
             <p class="card-text">Your Rating: {{ user_rating if user_rating else 'Not rated yet' }} / 5 </p>
+
+            <form class="card-text mb-2" action="{{ url_for('rate_book', book_id=book.id) }}" method="POST">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              
+              <div class="btn-group" aria-label="Basic example">
+                <button type="submit" name="rating" value="1" class="btn btn-warning">1</button>
+                <button type="submit" name="rating" value="2" class="btn btn-warning">2</button>
+                <button type="submit" name="rating" value="3" class="btn btn-warning">3</button>
+                <button type="submit" name="rating" value="4" class="btn btn-warning">4</button>
+                <button type="submit" name="rating" value="5" class="btn btn-warning">5</button>
+              </div>
+            </form>
           {% endif %}
           
           <h5 class="card-title">Actions: </h5>
@@ -48,7 +60,6 @@
       </div>
     </div>
   </div>
-
   <h3>Commentaires</h3>
   <div class="comment-section">
     {% for comment in comments %}
