@@ -8,12 +8,11 @@
 {% block content %}
   <h1>Your Favorite Books</h1>
   
-  <div class="sample">
+  <div class="sample d-flex flex-wrap">
     {% if books %}
       {% for book in books %}
-        <a href="{{ url_for('detail_book', id=book.id) }}">
-          <img src="{{ url_for('static', filename='images/' + book.img) }}" alt="{{ book.title }}" title="{{ book.title }}">
-        </a>
+        {% set x = book %} 
+        {% include 'book-card.html' %}
       {% endfor %}
     {% else %}
       <p>No favorite books added yet.</p>

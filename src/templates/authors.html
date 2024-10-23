@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+  {{ super() }}
+  <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+{% endblock %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+  
+  <div class="sample">
+    <h1>Authors list</h1>
+      {% for x in authors %}
+      <div class="card mb-2 text-start">
+        <div class="card-body d-flex">
+          <p class="m-auto">{{x.name}}</p>
+          <a href="{{ url_for('detail_author', id=x.id) }}" class="btn btn-primary material-icons me-2">open_in_new</a>
+          {% if current_user.is_authenticated %}
+            <a href="{{ url_for('save_author', id=x.id) }}" class="btn btn-primary material-icons">edit</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endblock %}
